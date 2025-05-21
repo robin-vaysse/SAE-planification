@@ -3,10 +3,11 @@ package iut.info1.sae.planning;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Tache {
 
-    private static List<Tache> tachesStockees = new ArrayList<>();
+	private static List<Tache> tachesStockees = new ArrayList<>();
 
     private String nom;
     private int duree;
@@ -18,10 +19,18 @@ public class Tache {
     private List<Integer> predecesseur;
 
     
-    public void Tache(String nom, int duree, int id, List<Integer> predecesseur) {
-        if (!isValide(this.nom, this.duree, this.id, this.predecesseur)) {
-            throw new IllegalArgumentException("Identifiant déjà utilisé.");
-        }
+	public Tache(String nom, int duree, int id,
+			            List<Integer> predecesseur) {
+		if (!isValide(nom, duree, id, predecesseur)) {
+			throw new IllegalArgumentException("Les valeurs fournies ne sont pas valides.");
+		}
+
+		// Vérifie que l'id est unique
+		for (Tache identifiant : tachesStockees) {
+			if (identifiant != null && identifiant.getId() == id) {
+				throw new IllegalArgumentException("L'identifiant est déjà utilisé par une autre tâche.");
+			}
+		}
     	this.nom = nom;
         this.duree = duree;
         this.id = id;
@@ -32,7 +41,7 @@ public class Tache {
         if (nom == null || nom.trim().isEmpty()) {
             return false;
         }
-        if (duree < DUREE_MIN || duree > DUREE_MAX || id <= 0 || predecesseur < 0) {
+        if (duree < DUREE_MIN || duree > DUREE_MAX || id <= 0) {
             return false;
         }
 
@@ -58,35 +67,32 @@ public class Tache {
         return this.id;
     }
 
-    public int getPredecesseur() {
+    public List<Integer> getPredecesseur() {
         return this.predecesseur;
     }
 
     @Override
     public String toString() {
-        return getNom() + getDuree() + getId() + getPredecesseur();
+        return "Nom de la tache " + getNom() + "Durée : " + getDuree() 
+                + "Identifient : " + getId() + "Predecesseur : " +getPredecesseur();
     }
 
     public void ajouter() {
-        tachesStockees.add(this);
+        if (!tachesStockees.contains(this)) {
+            tachesStockees.add(this);
+        }
     }
 
-    public void modifier(String nouveauNom, int nouvelleDuree, int nouvelId, List<Integer> nouveauPredecesseur) {
-        if (!isValide(nouveauNom, nouvelleDuree, nouvelId, nouveauPredecesseur)) {
-            throw new IllegalArgumentException("Les nouvelles valeurs ne sont pas valides.");
-        }
 
-        for (Tache tache : tachesStockees) {
-            if (tache != null && tache.getId() == nouvelId && tache != this) {
-                throw new IllegalArgumentException("L'identifiant est déjà utilisé par une autre tâche.");
-            }
-        }
-
-        this.nom = nouveauNom;
-        this.duree = nouvelleDuree;
-        this.id = nouvelId;
-        this.predecesseur = nouveauPredecesseur;
-    }
+	public void modifier(String nouveauNom, int nouvelleDuree, int nouvelId, List<Integer> nouveauPredecesseur) {
+	    if (!isValide(nouveauNom, nouvelleDuree, nouvelId, nouveauPredecesseur)) {
+	        throw new IllegalArgumentException("Les nouvelles valeurs ne sont pas valides.");
+	    }
+	    this.nom = nouveauNom;
+	    this.duree = nouvelleDuree;
+	    this.id = nouvelId;
+	    this.predecesseur = new ArrayList<>(nouveauPredecesseur);
+	}
 
     public void retirer() {
         if (!tachesStockees.remove(this)) {
@@ -96,5 +102,21 @@ public class Tache {
 
     public static List<Tache> getTachesStockees() {
         return tachesStockees;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Tache tache = (Tache) obj;
+        return id == tache.id &&
+               duree == tache.duree &&
+               nom.equals(tache.nom) &&
+               predecesseur.equals(tache.predecesseur);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nom, duree, id, predecesseur);
     }
 }
