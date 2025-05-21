@@ -1,5 +1,5 @@
 
-package planning;
+package iut.info1.sae.planning;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +15,23 @@ public class Tache {
     public final static int DUREE_MIN = 1;
 
     private int id;
-    private int predecesseur;
+    private List<Integer> predecesseur;
 
-    public void creationTache(String nom, int duree, int id, int predecesseur) {
-        this.nom = nom;
+    
+    public void Tache(String nom, int duree, int id, List<Integer> predecesseur) {
+        if (!isValide(this.nom, this.duree, this.id, this.predecesseur)) {
+            throw new IllegalArgumentException("Identifiant déjà utilisé.");
+        }
+    	this.nom = nom;
         this.duree = duree;
         this.id = id;
         this.predecesseur = predecesseur;
     }
 
-    public static boolean isValide(String nom, int duree, int id, int predecesseur) {
+    public static boolean isValide(String nom, int duree, int id, List<Integer> predecesseur) {
         if (nom == null || nom.trim().isEmpty()) {
             return false;
         }
-
         if (duree < DUREE_MIN || duree > DUREE_MAX || id <= 0 || predecesseur < 0) {
             return false;
         }
@@ -65,13 +68,10 @@ public class Tache {
     }
 
     public void ajouter() {
-        if (!isValide(this.nom, this.duree, this.id, this.predecesseur)) {
-            throw new IllegalArgumentException("Identifiant déjà utilisé.");
-        }
         tachesStockees.add(this);
     }
 
-    public void modifier(String nouveauNom, int nouvelleDuree, int nouvelId, int nouveauPredecesseur) {
+    public void modifier(String nouveauNom, int nouvelleDuree, int nouvelId, List<Integer> nouveauPredecesseur) {
         if (!isValide(nouveauNom, nouvelleDuree, nouvelId, nouveauPredecesseur)) {
             throw new IllegalArgumentException("Les nouvelles valeurs ne sont pas valides.");
         }
