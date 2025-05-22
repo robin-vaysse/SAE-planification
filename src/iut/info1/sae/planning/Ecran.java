@@ -1,6 +1,7 @@
 
 package iut.info1.sae.planning;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,29 +67,33 @@ public class Ecran {
      * @return La date au plus tard.
      */
     public int auPlusTardTache(Tache tache) {
-        int auPlusTard;
-        
-        auPlusTard = auPlusTotFinProjet() - tache.getDuree();
-
-        for (Tache autreTache : gestionnaire.calculerOrdre()) {
-            if (autreTache.getPredecesseurs().contains(tache.getId())) {
-                int debutSuccesseur = auPlusTardTache(autreTache) - autreTache.getDuree();
-                auPlusTard = Math.min(auPlusTard, debutSuccesseur);
-            }
+        if (tache.getPredecesseurs().isEmpty()) {
+            return 0;
         }
 
-        return auPlusTard;
-    }
+        // Calculer la date au plus tôt en fonction des prédécesseurs
+        int auPlusTot = 0;
+        for (int idPredecesseur : tache.getPredecesseurs()) {
+            Tache predecesseur = gestionnaire.trouverTacheParId(idPredecesseur);
+            if (predecesseur != null) {
+                int finPredecesseur = auPlusTotTache(predecesseur) - predecesseur.getDuree();
+                auPlusTot = Math.min(auPlusTot, finPredecesseur);
+            }
+        }
+		if (auPlusTot < 0) {
+			auPlusTot = -auPlusTot;
+		}
 
+        return auPlusTot;
+    }
     /**
      * Détermine si une tâche est critique.
      *
      * @param tache La tâche à vérifier.
-     * @return true si la tâche est critique, false sinon.
+     * @return margeTotalTache si la tâche est critique, false sinon.
      */
     public boolean tacheCritique(Tache tache) {
-        // À implémenter
-        return false;
+    	return margeTotalTache(tache) == 0;
     }
 
     /**
@@ -97,10 +102,14 @@ public class Ecran {
      * @return Liste des tâches formant le chemin critique.
      */
     public List<Tache> cheminCritique() {
-        // À implémenter
-        return null;
+        List<Tache> cheminCritique = new ArrayList<>();
+        for (Tache tache : gestionnaire.calculerOrdre()) {
+            if (margeTotalTache(tache) == 0) {
+                cheminCritique.add(tache);
+            }
+        }
+        return cheminCritique;
     }
-
     /**
      * Calcule la marge libre pour une tâche donnée.
      *
@@ -119,10 +128,9 @@ public class Ecran {
      * @return La marge totale.
      */
     public int margeTotalTache(Tache tache) {
-        // À implémenter
-        return 0;
+        int margeTotale = auPlusTardTache(tache) - auPlusTotTache(tache);
+        return margeTotale;
     }
-
     /**
      * Convertit une durée en jours-homme.
      *
