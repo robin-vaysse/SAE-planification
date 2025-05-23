@@ -3,6 +3,7 @@ package iut.info1.sae.planning;
 
 import java.util.ArrayList;
 import java.util.List;
+import iut.info1.sae.planning.Gestionnaire;
 
 /**
  * Classe responsable de l'affichage et des calculs liés à l'ordonnancement des tâches.
