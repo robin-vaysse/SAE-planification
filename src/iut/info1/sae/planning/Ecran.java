@@ -118,8 +118,17 @@ public class Ecran {
      * @return La marge libre.
      */
     public int margeLibreTache(Tache tache) {
-        // À implémenter
-        return 0;
+        int dateFinTache = auPlusTotTache(tache) + tache.getDuree();
+        int margeLibre = Integer.MAX_VALUE;
+
+        for (Tache successeur : gestionnaire.calculerOrdre()) {
+            if (successeur.getPredecesseurs().contains(tache.getId())) {
+                int auPlusTotSuccesseur = auPlusTotTache(successeur);
+                margeLibre = Math.min(margeLibre, auPlusTotSuccesseur - dateFinTache);
+            }
+        }
+
+        return margeLibre == Integer.MAX_VALUE ? 0 : margeLibre;
     }
 
     /**
@@ -138,9 +147,9 @@ public class Ecran {
      * @param duree La durée à convertir.
      * @return La durée en jours-homme.
      */
-    public int conversionJourHomme(int duree) {
-        // À implémenter
-        return 0;
+    public static double conversionJourHomme(int duree) {
+        final int HEURES_PAR_JOUR = 8;
+        return (double) duree / HEURES_PAR_JOUR;
     }
 
     /**
@@ -150,14 +159,41 @@ public class Ecran {
      * @return La durée en mois-homme.
      */
     public int conversionMoisHomme(int duree) {
-        // À implémenter
-        return 0;
+        final int HEURES_PAR_JOUR = 8;
+        final int JOURS_PAR_MOIS = 20;
+        double joursHomme = conversionJourHomme(duree);
+        return (int) (joursHomme / JOURS_PAR_MOIS);
     }
 
     /**
      * Affiche les résultats des calculs.
      */
     public void afficherResultats() {
-        // À implémenter
+        System.out.println("Résultats de l'ordonnancement des tâches :");
+        
+        for (Tache tache : gestionnaire.calculerOrdre()) {
+            int auPlusTot = auPlusTotTache(tache);
+            int auPlusTard = auPlusTardTache(tache);
+            int margeLibre = margeLibreTache(tache);
+            int margeTotale = margeTotalTache(tache);
+            boolean estCritique = tacheCritique(tache);
+            
+            System.out.printf("Tâche %d (%s) :\n", tache.getId(), tache.getNom());
+            System.out.printf("  - Au plus tôt : %d\n", auPlusTot);
+            System.out.printf("  - Au plus tard : %d\n", auPlusTard);
+            System.out.printf("  - Marge libre : %d\n", margeLibre);
+            System.out.printf("  - Marge totale : %d\n", margeTotale);
+            System.out.printf("  - Critique : %s\n", estCritique ? "Oui" : "Non");
+        }
+
+        System.out.println("\nChemin critique :");
+        List<Tache> cheminCritique = cheminCritique();
+        for (Tache tache : cheminCritique) {
+            System.out.printf("Tâche %d (%s)\n", tache.getId(), tache.getNom());
+        }
+
+        int dateFinProjet = auPlusTotFinProjet();
+        System.out.printf("\nDate au plus tôt pour la fin du projet : %d\n", dateFinProjet);
     }
+
 }
