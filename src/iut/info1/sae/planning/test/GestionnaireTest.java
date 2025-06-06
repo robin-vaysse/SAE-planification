@@ -1,4 +1,7 @@
-
+/*
+ * GestionnaireTest.java                           06/06/2025
+ * IUT de Rodez, Info 1 2024 - 2025 TP1, pas de copyright
+ */
 package iut.info1.sae.planning.test;
 
 import iut.info1.sae.planning.Gestionnaire;
@@ -9,8 +12,14 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Cette classe a pour but de réaliser les tests JUnit de la classe Gestionnaire
+ *  afin de savoir si les méthodes de cette classe marche
+ * @author Helg.Florian/Liao.Mattieu/Petit.Valentin/Rebourg.Noé/Vaysse.Robin
+ */
 class GestionnaireTest {
 
 	/** Initialisation des tâches pour les tests unitaires. */
@@ -42,8 +51,10 @@ class GestionnaireTest {
 	}
 
 
-
-
+	/**
+	 * Test method for 
+	 * {@link iut.info1sae.planning.Gestionnaire#Gestionnaire(List<Tache>)}
+	 */
     @Test
     void testConstructeur() {
         Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1, tache2));
@@ -61,10 +72,14 @@ class GestionnaireTest {
 	        new Gestionnaire(List.of(tache1, tache2))
 	    );
 	
-	    assertEquals("La tâche avec l'ID 99 n'existe pas.", exception.getMessage());
+	    assertEquals("La tâche avec l'ID 99 n'existe pas.",
+	    		      exception.getMessage());
 	}
 
-
+	/**
+	 * Test method for 
+	 * {@link iut.info1sae.planning.Gestionnaire#Gestionnaire(List<Tache>)}
+	 */
     @Test
     void testConstructeurAvecCycleSimple() {
     	Tache.getTachesStockees().clear();
@@ -75,9 +90,14 @@ class GestionnaireTest {
             new Gestionnaire(List.of(tache1, tache2))
         );
 
-        assertEquals("Le graphe des dépendances contient un cycle.", exception.getMessage());
+        assertEquals("Le graphe des dépendances contient un cycle.",
+        		      exception.getMessage());
     }
 
+    /**
+	 * Test method for 
+	 * {@link iut.info1sae.planning.Gestionnaire#Gestionnaire(List<Tache>)}
+	 */
     @Test
     void testConstructeurAvecCycleComplexe() {
     	Tache.getTachesStockees().clear();
@@ -89,13 +109,17 @@ class GestionnaireTest {
             new Gestionnaire(List.of(tache1, tache2, tache3))
         );
 
-        assertEquals("Le graphe des dépendances contient un cycle.", exception.getMessage());
-    }
+        assertEquals("Le graphe des dépendances contient un cycle.",
+        		      exception.getMessage());
+    } 
 
-
+    /**
+	 * Test method for{@link iut.info1sae.planning.Gestionnaire#calculerOrdre()}
+	 */
     @Test
     void testCalculerOrdre() {
-        Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1, tache2, tache3));
+        Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1,
+        		                                     tache2, tache3));
 
         List<Tache> ordre = gestionnaire.calculerOrdre();
 
@@ -105,18 +129,28 @@ class GestionnaireTest {
         assertEquals(3, ordre.get(2).getId());
     }
 
+    /**
+	 * Test method for
+	 * {@link iut.info1sae.planning.Gestionnaire#calculerDureeMax()}
+	 */
     @Test
     void testCalculerDureeMax() {
-        Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1, tache2, tache3));
+        Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1,
+        		                                     tache2, tache3));
 
         int dureeMax = gestionnaire.calculerDureeMax();
 
         assertEquals(10, dureeMax); // 3 (Tâche 1) + 5 (Tâche 2) + 2 (Tâche 3)
     }
 
+    /**
+	 * Test method for{@link iut.info1sae.planning.Gestionnaire#calculerOrdre()}
+	 */
     @Test
     void testTachesAvecPredecesseurs() {
-        Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1, tache2, tache3, tache4, tache5, tache6));
+        Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1, tache2,
+        		                                             tache3, tache4,
+        		                                             tache5, tache6));
 
         List<Tache> ordre = gestionnaire.calculerOrdre();
         assertTrue(ordre.indexOf(tache1) < ordre.indexOf(tache2));
@@ -131,9 +165,13 @@ class GestionnaireTest {
         assertEquals(26, dureeMax);
     }
 
+    /**
+	 * Test method for{@link iut.info1sae.planning.Gestionnaire#calculerOrdre()}
+	 */
     @Test
     void testTachesDansDesordre() {
-        Gestionnaire gestionnaire = new Gestionnaire(List.of(tache3, tache1, tache4, tache2));
+        Gestionnaire gestionnaire = new Gestionnaire(List.of(tache3, tache1, 
+        		                                             tache4, tache2));
 
         List<Tache> ordre = gestionnaire.calculerOrdre();
         assertEquals(4, ordre.size());
@@ -146,6 +184,9 @@ class GestionnaireTest {
         assertEquals(14, dureeMax);
     }
 
+    /**
+	 * Test method for{@link iut.info1sae.planning.Gestionnaire#calculerOrdre()}
+	 */
     @Test
     void testTachesAvecIdsNonConsecutifs() {
         Gestionnaire gestionnaire = new Gestionnaire(List.of(tache9, tache10));
@@ -158,6 +199,9 @@ class GestionnaireTest {
         assertEquals(7, dureeMax);
     }
 
+    /**
+	 * Test method for{@link iut.info1sae.planning.Gestionnaire#calculerOrdre()}
+	 */
     @Test
     void testTachesAvecDependancesMultiples() {
         Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1, tache2, 
@@ -173,6 +217,59 @@ class GestionnaireTest {
         int dureeMax = gestionnaire.calculerDureeMax();
         assertEquals(26, dureeMax);
     }
+    
+
+    /**
+	 * Test method for
+	 *{@link iut.info1sae.planning.Gestionnaire#trouverTachesSuccesseurs(Tache)}
+	 */
+	@Test
+	void testTrouverTachesSuccesseurs() {
+	    Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1, tache2,
+	    		                                             tache3, tache4,
+	    		                                             tache5, tache6));
+	    assertEquals(List.of(tache2),
+	    		     gestionnaire.trouverTachesSuccesseurs(tache1));	
+	    assertEquals(List.of(tache3),
+	    		     gestionnaire.trouverTachesSuccesseurs(tache2));
+	    assertEquals(List.of(tache4),
+	    		     gestionnaire.trouverTachesSuccesseurs(tache3));	
+	    assertEquals(List.of(tache6),
+	    		     gestionnaire.trouverTachesSuccesseurs(tache4));	
+	    assertEquals(List.of(tache6),
+	    		     gestionnaire.trouverTachesSuccesseurs(tache5));
+	    assertTrue(gestionnaire.trouverTachesSuccesseurs(tache6).isEmpty(),
+	    		   "Successeurs de tache6 : " +
+	                gestionnaire.trouverTachesSuccesseurs(tache6));
+	}
+
+
+	/**
+	 * Test method for
+	 * {@link 
+	 * iut.info1sae.planning.Gestionnaire#trouverTachesPredecesseurs(Tache)}
+	 */
+	@Test
+	void testTrouverTachesPredecesseurs() {
+	    Gestionnaire gestionnaire = new Gestionnaire(List.of(tache1, tache2,
+	    		                                             tache3, tache4,
+	    		                                             tache5, tache6));
+	
+	    assertEquals(0, gestionnaire.trouverTachesPredecesseurs(tache1).length);
+	    assertArrayEquals(new int[]{1},
+	    		          gestionnaire.trouverTachesPredecesseurs(tache2));
+	    assertArrayEquals(new int[]{2},
+	    		          gestionnaire.trouverTachesPredecesseurs(tache3));
+	    assertArrayEquals(new int[]{3},
+	    		          gestionnaire.trouverTachesPredecesseurs(tache4));
+	    assertEquals(0, gestionnaire.trouverTachesPredecesseurs(tache5).length);
+	    assertArrayEquals(new int[]{4, 5},
+	    		         gestionnaire.trouverTachesPredecesseurs(tache6));
+	}
+	
+	
+
+
 
 
 }
